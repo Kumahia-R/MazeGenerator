@@ -1,35 +1,43 @@
 package com.company;
 import java.util.*;
 import java.io.*;
+/* This program will generate a maze using a recursive backtracking algorithm*/
 public class Main {
+    String[] arrows = {"↑", "↓", "→", "←"}; //arrow keys for the upcoming solving algorithm(s)
     public static Stack<Cell> backTrack = new Stack<>();
+    //main() function sets the size of the maze, calls the generator function and prints the maze in the Command line
     public static void main(String[] args) {
-        int x = 10;
+        int x = 20;
         int y = 20;
         Grid first = new Grid(x, y);
         backTrack.push(first.start);
-        first.printGrid();
         recurseBackTrack(first, backTrack.peek());
+        first.printGrid();
     }
+    // Function to generate the maze using recursive backtracker algorithm
+    // Wikipedia's Maze generating algorithm page is a good read on how the algorithms work
+    // Link: https://en.wikipedia.org/wiki/Maze_generation_algorithm
     public static void recurseBackTrack(Grid recursive, Cell start) {
-        /*if (start.horizWall != " ") {
-            start.horizWall = "x";
-        }*/
-        boolean end = false;
-        recursive.printGrid();
+        boolean end = false; //true when maze completes, condition for exiting the recursive function
         Cell newCell = new Cell();
         boolean choseNewCell = false;
+        //my way of having the function randomly choose a direction to travel through cells
+        //array of integers(0-3) that gets shuffled so the order will be random
         ArrayList<Integer> directions = new ArrayList<Integer>();
         directions.add(0);
         directions.add(1);
         directions.add(2);
         directions.add(3);
         Collections.shuffle(directions);
-        start.visited = true;
+        start.visited = true; //marks that the Cell has been visited before
         if (backTrack.size() == 0) {
-            System.out.println("Maze complete");
-            end = true;
+            end = true; // if the stack size is zero, every cell has been visited, meaning the maze is complete
         }
+        /* The loop will search each bordering Cell and attempt to find a Cell that hasn't been visited yet
+        If unvisited Cell is found, the current Cell will be pushed onto the stack and the recursion will have the
+        unvisited Cell as the new argument.
+        If no Cell was found, the function pops the previous Cell from the stack and uses it as an argument again
+         */
         while (!choseNewCell && !end) {
             boolean atBound = false;
             if (directions.size() == 0) {
@@ -38,7 +46,6 @@ public class Main {
             }
             switch (directions.get(0)) {
                 case 0:
-                    System.out.println(directions.get(0));
                     if (start.rowPos > 0) {
                         newCell = recursive.gridSize[start.rowPos - 1][start.colPos];
                     } else {
@@ -54,7 +61,6 @@ public class Main {
                     }
                     break;
                 case 1:
-                    System.out.println(directions.get(0));
                     if (start.rowPos < recursive.gridSize.length - 1) {
                         newCell = recursive.gridSize[start.rowPos + 1][start.colPos];
                     } else {
@@ -70,7 +76,6 @@ public class Main {
                     }
                     break;
                 case 2:
-                    System.out.println(directions.get(0));
                     if (start.colPos < recursive.gridSize[0].length - 1) {
                         newCell = recursive.gridSize[start.rowPos][start.colPos + 1];
                     } else {
@@ -86,7 +91,6 @@ public class Main {
                     }
                     break;
                 case 3:
-                    System.out.println(directions.get(0));
                     if (start.colPos > 0) {
                         newCell = recursive.gridSize[start.rowPos][start.colPos - 1];
                     } else {
@@ -102,87 +106,6 @@ public class Main {
                     }
                     break;
             }
-        }
-    }
-}
-class Cell {
-    String vertWall = "|";
-    String horizWall;
-    boolean[] walls;
-    boolean visited;
-    int rowPos;
-    int colPos;
-
-    // Initializing a boolean array, each boolean represents one side of the cell
-    //false = no wall, true = wall
-    //walls[0] = north wall, [1] = south, [2] = east, [3] = west
-    Cell() {
-        walls = new boolean[]{true, true};
-        String vertWall = "|";
-        horizWall = "_";
-        visited = false;
-    }
-
-    public void printCell() {
-        if (this.walls[0]) {
-            System.out.print(vertWall);
-        }
-        else {
-            System.out.print(" ");
-        }
-        if (this.walls[1]) {
-            System.out.print(horizWall);
-        }
-        else {
-            System.out.print(" ");
-        }
-    }
-}
-class Grid {
-    Cell[][] gridSize;
-    Cell start;
-    Cell end;
-    int startIndex;
-    int endIndex;
-
-    Grid(int rows,int cols) {
-        gridSize = new Cell[rows][cols];
-        start = new Cell();
-        end = new Cell();
-        startIndex = (int)(Math.random() * cols);
-        endIndex = (int)(Math.random() * cols);
-        for (int i = 0; i < gridSize.length; i++) {
-            for (int j = 0; j < gridSize[i].length; j++) {
-                if (i == 0 && j == startIndex) {
-                    gridSize[i][j] = start;
-                }
-                else if (i == gridSize.length - 1 && j == endIndex) {
-                    gridSize[i][j] = end;
-                }
-                else {
-                    gridSize[i][j] = new Cell();
-                }
-                gridSize[i][j].rowPos = i;
-                gridSize[i][j].colPos = j;
-            }
-        }
-    }
-    public void printGrid() {
-        end.walls[1] = false;
-        for (Cell i : gridSize[0]) {
-            if (i != start) {
-                System.out.print(" _");
-            }
-            else {
-                System.out.print("  ");
-            }
-        }
-        System.out.println();
-        for (Cell[] i : gridSize) {
-            for (Cell j : i ) {
-                j.printCell();
-            }
-            System.out.println("|");
         }
     }
 }
