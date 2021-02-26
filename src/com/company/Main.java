@@ -3,15 +3,16 @@ import java.util.*;
 import java.io.*;
 /* This program will generate a maze using a recursive backtracking algorithm*/
 public class Main {
-    String[] arrows = {"↑", "↓", "→", "←"}; //arrow keys for the upcoming solving algorithm(s)
     public static Stack<Cell> backTrack = new Stack<>();
     //main() function sets the size of the maze, calls the generator function and prints the maze in the Command line
     public static void main(String[] args) {
-        int x = 20;
-        int y = 20;
+        int x = 5;
+        int y = 5;
         Grid first = new Grid(x, y);
         backTrack.push(first.start);
         recurseBackTrack(first, backTrack.peek());
+        first.printGrid();
+        randomMouse(first, first.start);
         first.printGrid();
     }
     // Function to generate the maze using recursive backtracker algorithm
@@ -54,7 +55,7 @@ public class Main {
                     if (newCell.visited || atBound) {
                         directions.remove(0);
                     } else {
-                        recursive.gridSize[start.rowPos - 1][start.colPos].horizWall = " ";
+                        recursive.gridSize[start.rowPos - 1][start.colPos].walls[1] = false;
                         backTrack.push(newCell);
                         recurseBackTrack(recursive, newCell);
                         choseNewCell = true;
@@ -69,7 +70,7 @@ public class Main {
                     if (newCell.visited || atBound) {
                         directions.remove(0);
                     } else {
-                        start.horizWall = " ";
+                        start.walls[1] = false;
                         backTrack.push(newCell);
                         recurseBackTrack(recursive, newCell);
                         choseNewCell = true;
@@ -84,7 +85,7 @@ public class Main {
                     if (newCell.visited || atBound) {
                         directions.remove(0);
                     } else {
-                        recursive.gridSize[start.rowPos][start.colPos + 1].vertWall = " ";
+                        recursive.gridSize[start.rowPos][start.colPos + 1].walls[0] = false;
                         backTrack.push(newCell);
                         recurseBackTrack(recursive, newCell);
                         choseNewCell = true;
@@ -99,7 +100,7 @@ public class Main {
                     if (newCell.visited || atBound) {
                         directions.remove(0);
                     } else {
-                        start.vertWall = " ";
+                        start.walls[0] = false;
                         backTrack.push(newCell);
                         recurseBackTrack(recursive, newCell);
                         choseNewCell = true;
@@ -107,5 +108,66 @@ public class Main {
                     break;
             }
         }
+    }
+    public static void randomMouse(Grid maze, Cell start) {
+        String[] arrows = {"↑", "↓","←", "→"}; //arrow keys for the upcoming solving algorithm(s)
+        int mouseXPos = start.rowPos;
+        int mouseYPos = start.colPos;
+        //maze.printGrid();
+        ArrayList<Integer> directions = new ArrayList<Integer>();
+        directions.add(0); //up
+        directions.add(1); //down
+        directions.add(2); //left
+        directions.add(3); //right
+        Collections.shuffle(directions);
+        while (directions.size() > 0) {
+            switch (directions.get(0)) {
+                case 0:
+                    if (mouseXPos > 0 && !maze.gridSize[mouseXPos - 1][mouseYPos].walls[1] && maze.gridSize[mouseXPos - 1][mouseYPos].visited) {
+                        backTrack.push(maze.gridSize[mouseXPos - 1][mouseYPos]);
+                        start.visited = false;
+                        start.blankHorizWall = arrows[0];
+                        start.horizWall = arrows[0];
+                        randomMouse(maze, backTrack.peek());
+                        mouseXPos--;
+                    }
+                    break;
+                case 1:
+                    if (mouseXPos < maze.gridSize.length - 1 && !maze.gridSize[mouseXPos][mouseYPos].walls[1] && maze.gridSize[mouseXPos + 1][mouseYPos].visited) {
+                        backTrack.push(maze.gridSize[mouseXPos + 1][mouseYPos]);
+                        start.visited = false;
+                        start.blankHorizWall = arrows[1];
+                        start.horizWall = arrows[1];
+                        randomMouse(maze, backTrack.peek());
+                        mouseXPos++;
+                    }
+                    break;
+                case 2:
+                    if (mouseYPos > 0 && !maze.gridSize[mouseXPos][mouseYPos].walls[0] && maze.gridSize[mouseXPos][mouseYPos - 1].visited) {
+                        backTrack.push(maze.gridSize[mouseXPos][mouseYPos - 1]);
+                        start.visited = false;
+                        start.horizWall = arrows[2];
+                        start.blankHorizWall = arrows[2];
+                        randomMouse(maze, backTrack.peek());
+                        mouseYPos--;
+                    }
+                    break;
+                case 3:
+                    if (mouseYPos < maze.gridSize[0].length - 1 && !maze.gridSize[mouseXPos][mouseYPos + 1].walls[0] && maze.gridSize[mouseXPos][mouseYPos + 1].visited) {
+                        backTrack.push(maze.gridSize[mouseXPos][mouseYPos + 1]);
+                        start.visited = false;
+                        start.horizWall = arrows[3];
+                        start.blankHorizWall = arrows[3];
+                        randomMouse(maze, backTrack.peek());
+                        mouseYPos++;
+                    }
+                    break;
+            }
+            directions.remove(0);
+        }
+        if (start == maze.end) {
+            return;
+        }
+
     }
 }
