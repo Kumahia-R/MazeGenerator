@@ -1,5 +1,5 @@
 package com.company;
-
+//class representing each cell of the grid
 class Cell {
     String vertWall = "|";
     String horizWall;

@@ -109,6 +109,9 @@ public class Main {
             }
         }
     }
+    /* algorithm to solve the maze, started as random mouse but currently
+    is more so a hybrid of it and recursive
+     */
     public static void randomMouse(Grid maze, Cell start) {
         String[] arrows = {"↑", "↓","←", "→"}; //arrow keys for the upcoming solving algorithm(s)
         int mouseXPos = start.rowPos;
